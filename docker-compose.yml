@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: orderflow_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: orderdb
+    ports:
+      - "5432:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: orderflow_rabbit
+    ports:
+      - "5672:5672"   # Porta principal -> Java usa
+      - "15672:15672" # Painel visual -> Joga no navegador
