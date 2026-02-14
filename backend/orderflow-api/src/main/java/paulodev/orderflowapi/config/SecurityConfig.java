@@ -18,7 +18,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // <-- Libera o POST
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().authenticated() // Exige senha para tudo
+                        .anyRequest().authenticated() // todas as requisições precisam ser autenticadas
                 )
                 .httpBasic(Customizer.withDefaults()); // Habilita o login pelo Postman
 
