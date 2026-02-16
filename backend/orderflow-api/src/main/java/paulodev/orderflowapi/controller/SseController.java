@@ -25,5 +25,4 @@ public class SseController {
         log.info("Novo listener conectado!");
         return emitter;
     }
-
 }

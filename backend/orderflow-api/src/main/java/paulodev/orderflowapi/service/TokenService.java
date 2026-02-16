@@ -18,7 +18,7 @@ public class TokenService {
     private String secret;
 
    // GERAR TOKEN
-    public String generateToken(String username) {
+    public String tokenGenerate(String username) {
         try {
             Algorithm algorithm  = Algorithm.HMAC256(secret);
             return JWT.create()
@@ -33,7 +33,7 @@ public class TokenService {
     }
 
     // VALIDAR TOKEN
-    public String validateToken(String token){
+    public String tokenValidate(String token){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
