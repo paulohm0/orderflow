@@ -1,4 +1,4 @@
 package paulodev.orderflowapi.dto.request;
 
-public record LoginRequest(String username, String password, String email) {
+public record UserRequest(String username, String password) {
 }
