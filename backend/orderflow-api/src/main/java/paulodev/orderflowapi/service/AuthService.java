@@ -36,7 +36,7 @@ public class AuthService {
     }
 
     public User authRegister(RegisterRequest registerRequest) {
-        if (userRepository.findByUsername(registerRequest.username()) != null) {
+        if (userRepository.findByUsername(registerRequest.username()) == null) {
             throw new RuntimeException("Usuário já foi criado");
         }
         String encryptedPassword = passwordEncoder.encode(registerRequest.password());

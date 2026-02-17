@@ -42,7 +42,7 @@ public class TokenService {
                     .verify(token)
                     .getSubject();    // Devolve o username se estiver tudo ok
         } catch (JWTVerificationException exception){
-            return "Token inválido ou expirado";
+            throw new RuntimeException("Token inválido ou expirado");
         }
     }
 

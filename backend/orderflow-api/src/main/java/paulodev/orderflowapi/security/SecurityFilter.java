@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import paulodev.orderflowapi.repository.UserRepository;
 import paulodev.orderflowapi.service.TokenService;
 
 import java.io.IOException;
@@ -18,18 +19,18 @@ import java.util.Collections;
 public class SecurityFilter extends OncePerRequestFilter {
 
     @Autowired
-    TokenService tokenService;
+    private TokenService tokenService;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
-
         if(token != null){
-            var login = tokenService.validateToken(token);
-
+            var login = tokenService.tokenValidate(token);
             if(!login.isEmpty()){
-                // Simula um usuário autenticado (Aqui você buscaria no banco depois)
-                var authentication = new UsernamePasswordAuthenticationToken(login, null, Collections.emptyList());
+                var user = userRepository.findByUsername(login);
+                var authentication = new UsernamePasswordAuthenticationToken(user, null, user.get().getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }

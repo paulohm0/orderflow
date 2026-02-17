@@ -3,7 +3,7 @@ package paulodev.orderflowapi.service;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import paulodev.orderflowapi.config.RabbitMQConfig;
+import paulodev.orderflowapi.messaging.RabbitMQConfig;
 import paulodev.orderflowapi.dto.request.OrderRequest;
 import paulodev.orderflowapi.entity.Order;
 import paulodev.orderflowapi.entity.OrderStatus;

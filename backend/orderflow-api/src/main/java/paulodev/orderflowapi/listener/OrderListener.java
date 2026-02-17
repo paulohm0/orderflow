@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import paulodev.orderflowapi.config.RabbitMQConfig;
+import paulodev.orderflowapi.messaging.RabbitMQConfig;
 import paulodev.orderflowapi.entity.Order;
 import paulodev.orderflowapi.entity.OrderStatus;
 import paulodev.orderflowapi.repository.OrderRepository;
