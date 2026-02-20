@@ -1,4 +1,6 @@
 package paulodev.orderflowapi.dto.response;
 
-public record UserResponse(String username, String email, String password) {
+import java.util.UUID;
+
+public record UserResponse(UUID uuid, String username, String email) {
 }

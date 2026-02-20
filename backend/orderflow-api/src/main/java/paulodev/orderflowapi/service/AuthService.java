@@ -1,16 +1,23 @@
 package paulodev.orderflowapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import paulodev.orderflowapi.dto.request.UpdateUserRequest;
 import paulodev.orderflowapi.dto.response.UserResponse;
 import paulodev.orderflowapi.dto.request.UserRequest;
 import paulodev.orderflowapi.dto.request.RegisterRequest;
 import paulodev.orderflowapi.dto.response.UserTokenResponse;
 import paulodev.orderflowapi.entity.User;
 import paulodev.orderflowapi.repository.UserRepository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -46,5 +53,32 @@ public class AuthService {
                 .email(registerRequest.email())
                 .build();
         return userRepository.save(newUser);
+    }
+
+    public List<User> findAllUsersCreated() {
+        var userList = userRepository.findAll();
+        if (userList.isEmpty()) {
+            throw new RuntimeException("Lista de Usuários vazia");
+        }
+        return userList;
+    }
+
+    public User updateUser(UUID uuid, UpdateUserRequest updateUserRequest) {
+        var userToUpdate = userRepository.findById(uuid)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        // verifico quais campos do updateUserRequest estão preenchidos e atualizo na entidade do db
+        Optional.ofNullable(updateUserRequest.username()).ifPresent(userToUpdate::setUsername);
+        Optional.ofNullable(updateUserRequest.email()).ifPresent(userToUpdate::setEmail);
+        Optional.ofNullable(updateUserRequest.password()).ifPresent(
+                password -> userToUpdate.setPassword(passwordEncoder.encode(password)));
+
+        return userRepository.save(userToUpdate);
+    }
+
+    public void deleteUser(UUID uuid) {
+        var userToDelete = userRepository.findById(uuid)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        userRepository.deleteById(uuid);
     }
 }
