@@ -1,11 +1,9 @@
-<script setup>
-</script>
-
 <template>
-  <div>
-    <h1>OrderFlow</h1>
-  </div>
+  <router-view />
 </template>
 
 <style scoped>
 </style>
+
+<script setup>
+</script>
