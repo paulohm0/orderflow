@@ -38,10 +38,9 @@ public class OrderListener {
         }
 
         // 3. Atualiza o status
-        order.setStatus(OrderStatus.DELIVERED);
+        order.setStatus(OrderStatus.COMPLETED);
         sseService.notify("Pedido " + order.getId() + " atualizado para: " + order.getStatus());
         orderRepository.save(order);
         log.info("Pedido atualizado e notificação enviada !");
     }
-
 }

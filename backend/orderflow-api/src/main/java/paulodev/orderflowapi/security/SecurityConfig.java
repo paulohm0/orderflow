@@ -44,6 +44,18 @@ public class SecurityConfig {
                 .build();
     }
 
+    // Configuração de CORS para permitir requisições de diferentes origens.
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
+        corsConfiguration.addAllowedOriginPattern("*");  // para testes no postman e localhost (*), em produção deve ser configurado para o domínio específico (localhost:3000)
+        corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE","OPTIONS"));
+        corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
+        corsConfiguration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return source;
+    }
 
     // Injeta o AuthenticationManager no seu AuthService
     @Bean
@@ -51,24 +63,9 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-
     // Injeta o PasswordEncoder no AuthService usando o BCrypt
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-
-    // Configuração de CORS para permitir requisições de diferentes origens.
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("*");  // para testes no postman e localhost (*), em produção deve ser configurado para o domínio específico (localhost:3000)
-        corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE","OPTIONS"));
-        corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
-        corsConfiguration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-        return source;
     }
 }
