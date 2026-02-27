@@ -32,7 +32,7 @@ public class OrderListener {
 
         // 1. Simula um processamento lento (ex: Pagamento, Estoque)
         try {
-            Thread.sleep(7000);
+            Thread.sleep(60000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

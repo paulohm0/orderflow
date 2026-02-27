@@ -84,7 +84,7 @@ public class AuthController {
         }
         authService.deleteUser(userId);
         Map<String, String> response = new HashMap<>();
-        response.put("mensage", "Usuário deletado com sucesso");
+        response.put("message", "Usuário deletado com sucesso");
         return ResponseEntity.ok(response);
     }
 }

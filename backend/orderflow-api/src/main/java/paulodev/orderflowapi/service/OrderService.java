@@ -2,6 +2,7 @@ package paulodev.orderflowapi.service;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import paulodev.orderflowapi.entity.User;
 import paulodev.orderflowapi.messaging.RabbitMQConfig;
@@ -43,8 +44,21 @@ public class OrderService {
     }
 
     public List<Order> getOrdersListByUserId(UUID userId) {
-        User ordersUser = userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não achado com id: " + userId));
-        return ordersUser.getOrders();
+        return user.getOrders();
+    }
+
+    public void cancelOrder(UUID orderId, User authenticatedUser) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Pedido nao achado com id: " + orderId));
+        if (!authenticatedUser.getId().equals(order.getUser().getId())) {
+            throw new AccessDeniedException("Você não pode cancelar esse pedido");
+        }
+        if (order.getStatus() == OrderStatus.COMPLETED || order.getStatus() == OrderStatus.CANCELED) {
+            throw new RuntimeException("Operação Inválida");
+        }
+        order.setStatus(OrderStatus.CANCELED);
+        orderRepository.save(order);
     }
 }
