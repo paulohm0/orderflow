@@ -43,9 +43,9 @@ public class OrderService {
     return savedOrder;
     }
 
-    public List<Order> getOrdersListByUserId(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não achado com id: " + userId));
+    public List<Order> getOrdersListByUserId(User authenticatedUser) {
+        User user = userRepository.findById(authenticatedUser.getId())
+                .orElseThrow(() -> new RuntimeException("Usuário não achado com id: " + authenticatedUser.getId()));
         return user.getOrders();
     }
 

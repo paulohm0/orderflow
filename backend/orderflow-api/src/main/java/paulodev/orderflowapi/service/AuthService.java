@@ -2,6 +2,7 @@ package paulodev.orderflowapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -63,22 +64,27 @@ public class AuthService {
         return userList;
     }
 
-    public User updateUser(UUID uuid, UpdateUserRequest updateUserRequest) {
-        var userToUpdate = userRepository.findById(uuid)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    public User updateUser(User authenticatedUser, UpdateUserRequest updateUserRequest) {
 
+        var userToUpdate = userRepository.findById(authenticatedUser.getId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        if (!authenticatedUser.getId().equals(userToUpdate.getId())) {
+            throw new AccessDeniedException("Você não pode alterar outro usuário");
+        }
         // verifico quais campos do updateUserRequest estão preenchidos e atualizo na entidade do db
         Optional.ofNullable(updateUserRequest.username()).ifPresent(userToUpdate::setUsername);
         Optional.ofNullable(updateUserRequest.email()).ifPresent(userToUpdate::setEmail);
         Optional.ofNullable(updateUserRequest.password()).ifPresent(
                 password -> userToUpdate.setPassword(passwordEncoder.encode(password)));
-
         return userRepository.save(userToUpdate);
     }
 
-    public void deleteUser(UUID uuid) {
-        var userToDelete = userRepository.findById(uuid)
+    public void deleteUser(User authenticatedUser) {
+        var userToDelete = userRepository.findById(authenticatedUser.getId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        userRepository.deleteById(uuid);
+        if (!authenticatedUser.getId().equals(userToDelete.getId())) {
+            throw new AccessDeniedException("Você não pode deletar outro usuário");
+        }
+        userRepository.deleteById(userToDelete.getId());
     }
 }

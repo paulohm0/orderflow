@@ -40,9 +40,9 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
     }
 
-    @GetMapping("/list/{userId}")
-    public ResponseEntity<List<OrderResponse>> getOrdersListByUserId(@PathVariable("userId") UUID userId) {
-        List<OrderResponse> orderResponseList = orderService.getOrdersListByUserId(userId)
+    @GetMapping("/list")
+    public ResponseEntity<List<OrderResponse>> getOrdersListByUserId(@AuthenticationPrincipal User authenticatedUser) {
+        List<OrderResponse> orderResponseList = orderService.getOrdersListByUserId(authenticatedUser)
             .stream().map(order ->
                  new OrderResponse(
                       order.getId(),

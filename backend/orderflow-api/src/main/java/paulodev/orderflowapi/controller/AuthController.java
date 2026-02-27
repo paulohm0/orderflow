@@ -27,14 +27,8 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/login")
-    public ResponseEntity<UserTokenResponse> authLogin(@RequestBody UserRequest userRequest) {
-        var userWithAccessToken = authService.authLogin(userRequest);
-        return ResponseEntity.ok(userWithAccessToken);
-    }
-
     @PostMapping("/register")
-    public ResponseEntity<Object> authRegister(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<Object> authRegister (@RequestBody RegisterRequest registerRequest) {
         var newUser = authService.authRegister(registerRequest);
         Map<String, String> response = new HashMap<>();
         response.put("mensage", "Usuário criado com sucesso");
@@ -43,29 +37,29 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<UserTokenResponse> authLogin (@RequestBody UserRequest userRequest) {
+        var userWithAccessToken = authService.authLogin(userRequest);
+        return ResponseEntity.ok(userWithAccessToken);
+    }
+
     @GetMapping("/users-list")
     public ResponseEntity<List<UserResponse>> findAllUsersCreated() {
         List<UserResponse> response = authService.findAllUsersCreated()
-                .stream()
-                .map(user ->
+                .stream().map(user ->
                         new UserResponse(
                                 user.getId(),
                                 user.getUsername(),
                                 user.getEmail())).toList();
-
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{userId}")
+    @PutMapping("/update-user")
     public ResponseEntity<Object> updateUser(
-            @PathVariable("userId") UUID userId,
             @RequestBody UpdateUserRequest updateUserRequest,
             @AuthenticationPrincipal User authenticatedUser)
     {
-        if (!authenticatedUser.getId().equals(userId)) {
-            throw new AccessDeniedException("Você não pode alterar outro usuário");
-        }
-        var updatedUser = authService.updateUser(userId, updateUserRequest);
+        var updatedUser = authService.updateUser(authenticatedUser, updateUserRequest);
         Map<String, String> response = new HashMap<>();
         response.put("mensage", "Usuário atualizado com sucesso");
         response.put("username", updatedUser.getUsername());
@@ -74,15 +68,11 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/delete-user")
     public ResponseEntity<Object> deleteUser(
-            @PathVariable("userId") UUID userId,
             @AuthenticationPrincipal User authenticatedUser)
     {
-        if (!authenticatedUser.getId().equals(userId)) {
-            throw new AccessDeniedException("Você não pode deletar outro usuário");
-        }
-        authService.deleteUser(userId);
+        authService.deleteUser(authenticatedUser);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Usuário deletado com sucesso");
         return ResponseEntity.ok(response);
