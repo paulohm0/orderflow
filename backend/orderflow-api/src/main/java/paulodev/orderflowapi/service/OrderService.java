@@ -28,19 +28,13 @@ public class OrderService {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public Order createOrder(OrderRequest orderRequest) {
-        User orderUser = userRepository.findById(orderRequest.userId())
-                .orElseThrow(() -> new RuntimeException("Usuário não achado com id: " + orderRequest.userId()));
-        Order newOrder = Order.builder()
-                .description(orderRequest.description())
-                .amount(orderRequest.amount())
-                .createdAt(Instant.now())
-                .status(OrderStatus.PENDING)
-                .user(orderUser)
-                .build();
-    var savedOrder = orderRepository.save(newOrder);
-    rabbitTemplate.convertAndSend(RabbitMQConfig.ORDER_QUEUE,savedOrder.getId().toString());
-    return savedOrder;
+    public Order createOrder(OrderRequest orderRequest, User authenticatedUser) {
+        User orderUser = userRepository.findById(authenticatedUser.getId())
+                .orElseThrow(() -> new RuntimeException("Usuário não achado com id: " + authenticatedUser.getId()));
+        Order newOrder = Order.createOrder(orderRequest,orderUser);
+        var savedOrder = orderRepository.save(newOrder);
+        rabbitTemplate.convertAndSend(RabbitMQConfig.ORDER_QUEUE,savedOrder.getId().toString());
+        return savedOrder;
     }
 
     public List<Order> getOrdersListByUserId(User authenticatedUser) {
@@ -49,7 +43,7 @@ public class OrderService {
         return user.getOrders();
     }
 
-    public void cancelOrder(UUID orderId, User authenticatedUser) {
+    public Order cancelOrder(UUID orderId, User authenticatedUser) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Pedido nao achado com id: " + orderId));
         if (!authenticatedUser.getId().equals(order.getUser().getId())) {
@@ -59,6 +53,6 @@ public class OrderService {
             throw new RuntimeException("Operação Inválida");
         }
         order.setStatus(OrderStatus.CANCELED);
-        orderRepository.save(order);
+        return orderRepository.save(order);
     }
 }

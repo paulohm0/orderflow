@@ -2,6 +2,7 @@ package paulodev.orderflowapi.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import paulodev.orderflowapi.dto.request.OrderRequest;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -9,7 +10,6 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tb_orders")
@@ -36,5 +36,15 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public static Order createOrder(OrderRequest orderRequest, User user) {
+        Order order = new Order();
+        order.description = orderRequest.description();
+        order.amount = orderRequest.amount();
+        order.createdAt = Instant.now();
+        order.status = OrderStatus.PENDING;
+        order.user = user;
+        return order;
+    }
 
 }

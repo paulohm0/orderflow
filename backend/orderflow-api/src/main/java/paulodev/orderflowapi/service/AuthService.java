@@ -1,24 +1,21 @@
 package paulodev.orderflowapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import paulodev.orderflowapi.dto.request.UpdateUserRequest;
-import paulodev.orderflowapi.dto.response.UserResponse;
 import paulodev.orderflowapi.dto.request.UserRequest;
 import paulodev.orderflowapi.dto.request.RegisterRequest;
 import paulodev.orderflowapi.dto.response.UserTokenResponse;
 import paulodev.orderflowapi.entity.User;
+import paulodev.orderflowapi.entity.UserStatus;
 import paulodev.orderflowapi.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -37,9 +34,7 @@ public class AuthService {
         var usernamePassword = new UsernamePasswordAuthenticationToken(userRequest.username(), userRequest.password());
         var auth = authManager.authenticate(usernamePassword);
         var token = tokenService.tokenGenerate(auth.getName());
-        UserTokenResponse response = new UserTokenResponse(
-                token,
-                auth.getName());
+        UserTokenResponse response = new UserTokenResponse(token, auth.getName());
         return response;
     }
 
@@ -48,11 +43,7 @@ public class AuthService {
             throw new RuntimeException("Usuário já foi criado");
         }
         String encryptedPassword = passwordEncoder.encode(registerRequest.password());
-        User newUser = User.builder()
-                .username(registerRequest.username())
-                .password(encryptedPassword)
-                .email(registerRequest.email())
-                .build();
+        User newUser = User.createUser(registerRequest);
         return userRepository.save(newUser);
     }
 
@@ -80,11 +71,16 @@ public class AuthService {
     }
 
     public void deleteUser(User authenticatedUser) {
-        var userToDelete = userRepository.findById(authenticatedUser.getId())
+        var user = userRepository.findById(authenticatedUser.getId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        if (!authenticatedUser.getId().equals(userToDelete.getId())) {
+        if (!authenticatedUser.getId().equals(user.getId())) {
             throw new AccessDeniedException("Você não pode deletar outro usuário");
         }
-        userRepository.deleteById(userToDelete.getId());
+        if (user.getOrders().isEmpty()) {
+            userRepository.deleteById(user.getId());
+        } else {
+            user.setUserStatus(UserStatus.INACTIVE);
+        }
+        userRepository.save(user);
     }
 }

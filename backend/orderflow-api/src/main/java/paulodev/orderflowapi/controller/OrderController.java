@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import paulodev.orderflowapi.dto.request.OrderRequest;
+import paulodev.orderflowapi.dto.response.MessageResponse;
 import paulodev.orderflowapi.dto.response.OrderResponse;
 import paulodev.orderflowapi.entity.Order;
 import paulodev.orderflowapi.entity.User;
@@ -27,24 +28,27 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
-        var newOrder = orderService.createOrder(orderRequest);
+    public ResponseEntity<OrderResponse> createOrder(
+            @Valid @RequestBody OrderRequest orderRequest,
+            @AuthenticationPrincipal User authenticatedUser)
+    {
+        var newOrder = orderService.createOrder(orderRequest, authenticatedUser);
         OrderResponse orderResponse = new OrderResponse(
-                newOrder.getId(),
-                newOrder.getUser().getId(),
-                newOrder.getUser().getUsername(),
-                newOrder.getDescription(),
-                newOrder.getAmount(),
-                newOrder.getCreatedAt(),
-                newOrder.getStatus());
+                                        newOrder.getId(),
+                                        newOrder.getUser().getId(),
+                                        newOrder.getUser().getUsername(),
+                                        newOrder.getDescription(),
+                                        newOrder.getAmount(),
+                                        newOrder.getCreatedAt(),
+                                        newOrder.getStatus());
         return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
     }
 
     @GetMapping("/list")
     public ResponseEntity<List<OrderResponse>> getOrdersListByUserId(@AuthenticationPrincipal User authenticatedUser) {
         List<OrderResponse> orderResponseList = orderService.getOrdersListByUserId(authenticatedUser)
-            .stream().map(order ->
-                 new OrderResponse(
+                .stream().map(order ->
+                    new OrderResponse(
                       order.getId(),
                       order.getUser().getId(),
                       order.getUser().getUsername(),
@@ -56,13 +60,12 @@ public class OrderController {
     }
 
     @PatchMapping("/cancel/{orderId}")
-    public ResponseEntity<Object> cancelOrder(
+    public ResponseEntity<MessageResponse> cancelOrder(
             @PathVariable("orderId") UUID orderId,
             @AuthenticationPrincipal User authenticatedUser)
     {
         orderService.cancelOrder(orderId, authenticatedUser);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Pedido cancelado com sucesso");
-        return ResponseEntity.ok(response);
+        MessageResponse response = new MessageResponse("Order deleted successfully");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
 }
