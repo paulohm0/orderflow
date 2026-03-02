@@ -1,3 +1,3 @@
 package paulodev.orderflowapi.dto.response;
 
-public record UserWithMessageResponse(String username, String email, String message) { }
+public record UserWithMessageResponse(String message, String username, String email) { }

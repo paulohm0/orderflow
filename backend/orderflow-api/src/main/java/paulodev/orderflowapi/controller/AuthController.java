@@ -30,9 +30,9 @@ public class AuthController {
     public ResponseEntity<UserWithMessageResponse> authRegister (@RequestBody RegisterRequest registerRequest) {
         var newUser = authService.authRegister(registerRequest);
         UserWithMessageResponse response = new UserWithMessageResponse(
+                                            "User created successfully",
                                             newUser.getUsername(),
-                                            newUser.getEmail(),
-                                            "User created successfully");
+                                            newUser.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -61,9 +61,9 @@ public class AuthController {
     {
         var updatedUser = authService.updateUser(authenticatedUser, updateUserRequest);
         UserWithMessageResponse response = new UserWithMessageResponse(
+                                            "Updated informations",
                                             updatedUser.getUsername(),
-                                            updatedUser.getEmail(),
-                                            "Updated informations");
+                                            updatedUser.getEmail());
         return ResponseEntity.ok(response);
     }
 

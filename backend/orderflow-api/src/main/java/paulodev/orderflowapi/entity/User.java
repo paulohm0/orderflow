@@ -42,10 +42,10 @@ public class User implements UserDetails {
     @Column(name = "status", nullable = false)
     private UserStatus userStatus;
 
-    public static User createUser(RegisterRequest registerRequest) {
+    public static User createUser(RegisterRequest registerRequest, String encryptedPassword) {
         User user = new User();
         user.username = registerRequest.username();
-        user.password = registerRequest.password();
+        user.password = encryptedPassword;
         user.email = registerRequest.email();
         user.orders = new ArrayList<>();
         user.userStatus = UserStatus.ACTIVE;

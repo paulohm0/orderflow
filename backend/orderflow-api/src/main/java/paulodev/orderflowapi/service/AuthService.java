@@ -43,7 +43,7 @@ public class AuthService {
             throw new RuntimeException("Usuário já foi criado");
         }
         String encryptedPassword = passwordEncoder.encode(registerRequest.password());
-        User newUser = User.createUser(registerRequest);
+        User newUser = User.createUser(registerRequest, encryptedPassword);
         return userRepository.save(newUser);
     }
 
@@ -80,7 +80,8 @@ public class AuthService {
             userRepository.deleteById(user.getId());
         } else {
             user.setUserStatus(UserStatus.INACTIVE);
+            userRepository.save(user);
         }
-        userRepository.save(user);
+
     }
 }
