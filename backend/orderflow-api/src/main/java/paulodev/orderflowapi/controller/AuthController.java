@@ -68,9 +68,8 @@ public class AuthController {
     }
 
     @DeleteMapping("/delete-user")
-    public ResponseEntity<MessageResponse> deleteUser(@AuthenticationPrincipal User authenticatedUser) {
+    public ResponseEntity deleteUser(@AuthenticationPrincipal User authenticatedUser) {
         authService.deleteUser(authenticatedUser);
-        MessageResponse response = new MessageResponse("User deleted successfully");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+        return ResponseEntity.noContent().build();
     }
 }

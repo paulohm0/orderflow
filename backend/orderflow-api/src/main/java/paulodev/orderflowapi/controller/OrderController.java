@@ -60,12 +60,11 @@ public class OrderController {
     }
 
     @PatchMapping("/cancel/{orderId}")
-    public ResponseEntity<MessageResponse> cancelOrder(
+    public ResponseEntity cancelOrder(
             @PathVariable("orderId") UUID orderId,
             @AuthenticationPrincipal User authenticatedUser)
     {
         orderService.cancelOrder(orderId, authenticatedUser);
-        MessageResponse response = new MessageResponse("Order deleted successfully");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+        return ResponseEntity.noContent().build();
     }
 }

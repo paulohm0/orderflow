@@ -12,6 +12,9 @@ import paulodev.orderflowapi.dto.request.RegisterRequest;
 import paulodev.orderflowapi.dto.response.UserTokenResponse;
 import paulodev.orderflowapi.entity.User;
 import paulodev.orderflowapi.entity.UserStatus;
+import paulodev.orderflowapi.esception.ConflictException;
+import paulodev.orderflowapi.esception.ForbiddenOperationException;
+import paulodev.orderflowapi.esception.ResourceNotFoundException;
 import paulodev.orderflowapi.repository.UserRepository;
 
 import java.util.List;
@@ -30,6 +33,15 @@ public class AuthService {
     private TokenService tokenService;
 
 
+    public User authRegister(RegisterRequest registerRequest) {
+        if (userRepository.findByEmail(registerRequest.email()).isPresent()) {
+           throw new ConflictException("Um usuário já foi criado com esse email");
+        }
+        String encryptedPassword = passwordEncoder.encode(registerRequest.password());
+        User newUser = User.createUser(registerRequest, encryptedPassword);
+        return userRepository.save(newUser);
+    }
+
     public UserTokenResponse authLogin(UserRequest userRequest) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(userRequest.username(), userRequest.password());
         var auth = authManager.authenticate(usernamePassword);
@@ -38,29 +50,19 @@ public class AuthService {
         return response;
     }
 
-    public User authRegister(RegisterRequest registerRequest) {
-        if (userRepository.findByUsername(registerRequest.username()) == null) {
-            throw new RuntimeException("Usuário já foi criado");
-        }
-        String encryptedPassword = passwordEncoder.encode(registerRequest.password());
-        User newUser = User.createUser(registerRequest, encryptedPassword);
-        return userRepository.save(newUser);
-    }
-
     public List<User> findAllUsersCreated() {
         var userList = userRepository.findAll();
         if (userList.isEmpty()) {
-            throw new RuntimeException("Lista de Usuários vazia");
+            throw new ResourceNotFoundException("Lista de Usuários vazia");
         }
         return userList;
     }
 
     public User updateUser(User authenticatedUser, UpdateUserRequest updateUserRequest) {
-
         var userToUpdate = userRepository.findById(authenticatedUser.getId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
         if (!authenticatedUser.getId().equals(userToUpdate.getId())) {
-            throw new AccessDeniedException("Você não pode alterar outro usuário");
+            throw new ForbiddenOperationException("Você não pode alterar outro usuário");
         }
         // verifico quais campos do updateUserRequest estão preenchidos e atualizo na entidade do db
         Optional.ofNullable(updateUserRequest.username()).ifPresent(userToUpdate::setUsername);
@@ -72,9 +74,9 @@ public class AuthService {
 
     public void deleteUser(User authenticatedUser) {
         var user = userRepository.findById(authenticatedUser.getId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
         if (!authenticatedUser.getId().equals(user.getId())) {
-            throw new AccessDeniedException("Você não pode deletar outro usuário");
+            throw new ForbiddenOperationException("Você não pode deletar outro usuário");
         }
         if (user.getOrders().isEmpty()) {
             userRepository.deleteById(user.getId());
