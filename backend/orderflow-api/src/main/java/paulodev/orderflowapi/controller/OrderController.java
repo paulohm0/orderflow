@@ -12,6 +12,7 @@ import paulodev.orderflowapi.dto.request.OrderRequest;
 import paulodev.orderflowapi.dto.response.MessageResponse;
 import paulodev.orderflowapi.dto.response.OrderResponse;
 import paulodev.orderflowapi.entity.Order;
+import paulodev.orderflowapi.entity.OrderStatus;
 import paulodev.orderflowapi.entity.User;
 import paulodev.orderflowapi.service.OrderService;
 
@@ -45,7 +46,9 @@ public class OrderController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<OrderResponse>> getOrdersListByUserId(@AuthenticationPrincipal User authenticatedUser) {
+    public ResponseEntity<List<OrderResponse>> getOrdersListByUserId(
+            @AuthenticationPrincipal User authenticatedUser)
+    {
         List<OrderResponse> orderResponseList = orderService.getOrdersListByUserId(authenticatedUser)
                 .stream().map(order ->
                     new OrderResponse(

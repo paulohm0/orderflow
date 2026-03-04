@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import paulodev.orderflowapi.esception.ResourceNotFoundException;
 import paulodev.orderflowapi.repository.UserRepository;
 import paulodev.orderflowapi.service.TokenService;
 
@@ -29,8 +30,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         if(token != null){
             var login = tokenService.tokenValidate(token);
             if(!login.isEmpty()){
-                var user = userRepository.findByUsername(login).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));;
-
+                var user = userRepository.findByUsername(login).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
                 var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

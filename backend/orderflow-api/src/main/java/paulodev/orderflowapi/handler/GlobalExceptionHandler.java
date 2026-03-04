@@ -5,10 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import paulodev.orderflowapi.esception.ConflictException;
-import paulodev.orderflowapi.esception.ForbiddenOperationException;
-import paulodev.orderflowapi.esception.InvalidOperationException;
-import paulodev.orderflowapi.esception.ResourceNotFoundException;
+import paulodev.orderflowapi.esception.*;
+import org.springframework.security.core.AuthenticationException;
 
 import java.time.Instant;
 
@@ -76,5 +74,20 @@ public class GlobalExceptionHandler {
                 request.getRequestURI(),
                 Instant.now());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    ///  usuario ou senha errado no login / Token
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponseDTO> userNotAuthenticated (
+            AuthenticationException exception,
+            HttpServletRequest request
+    ) {
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                401,
+                "UNAUTHORIZED",
+                "Credenciais inválidas",
+                request.getRequestURI(),
+                Instant.now());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 }

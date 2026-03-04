@@ -43,8 +43,8 @@ public class AuthController {
     }
 
     @GetMapping("/users-list")
-    public ResponseEntity<List<UserResponse>> findAllUsersCreated() {
-        List<UserResponse> response = authService.findAllUsersCreated()
+    public ResponseEntity<List<UserResponse>> findAllUsersCreated(@AuthenticationPrincipal User authenticatedUser) {
+        List<UserResponse> response = authService.findAllUsersCreated(authenticatedUser)
                 .stream().map(user ->
                         new UserResponse(
                          user.getId(),

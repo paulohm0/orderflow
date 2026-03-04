@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import paulodev.orderflowapi.dto.request.UpdateUserRequest;
@@ -12,9 +14,7 @@ import paulodev.orderflowapi.dto.request.RegisterRequest;
 import paulodev.orderflowapi.dto.response.UserTokenResponse;
 import paulodev.orderflowapi.entity.User;
 import paulodev.orderflowapi.entity.UserStatus;
-import paulodev.orderflowapi.esception.ConflictException;
-import paulodev.orderflowapi.esception.ForbiddenOperationException;
-import paulodev.orderflowapi.esception.ResourceNotFoundException;
+import paulodev.orderflowapi.esception.*;
 import paulodev.orderflowapi.repository.UserRepository;
 
 import java.util.List;
@@ -44,13 +44,14 @@ public class AuthService {
 
     public UserTokenResponse authLogin(UserRequest userRequest) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(userRequest.username(), userRequest.password());
+
         var auth = authManager.authenticate(usernamePassword);
         var token = tokenService.tokenGenerate(auth.getName());
         UserTokenResponse response = new UserTokenResponse(token, auth.getName());
         return response;
     }
 
-    public List<User> findAllUsersCreated() {
+    public List<User> findAllUsersCreated(@AuthenticationPrincipal User authenticatedUser) {
         var userList = userRepository.findAll();
         if (userList.isEmpty()) {
             throw new ResourceNotFoundException("Lista de Usuários vazia");
