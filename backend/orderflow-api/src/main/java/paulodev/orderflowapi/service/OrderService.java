@@ -2,20 +2,20 @@ package paulodev.orderflowapi.service;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import paulodev.orderflowapi.entity.User;
-import paulodev.orderflowapi.esception.ForbiddenOperationException;
-import paulodev.orderflowapi.esception.InvalidOperationException;
-import paulodev.orderflowapi.esception.ResourceNotFoundException;
+import paulodev.orderflowapi.exception.ForbiddenOperationException;
+import paulodev.orderflowapi.exception.InvalidOperationException;
+import paulodev.orderflowapi.exception.ResourceNotFoundException;
 import paulodev.orderflowapi.messaging.RabbitMQConfig;
 import paulodev.orderflowapi.dto.request.OrderRequest;
 import paulodev.orderflowapi.entity.Order;
 import paulodev.orderflowapi.entity.OrderStatus;
 import paulodev.orderflowapi.repository.OrderRepository;
 import paulodev.orderflowapi.repository.UserRepository;
+import paulodev.orderflowapi.repository.specification.OrderSpecifications;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,10 +40,13 @@ public class OrderService {
         return savedOrder;
     }
 
-    public List<Order> getOrdersListByUserId(User authenticatedUser) {
+    public List<Order> getOrdersListByUserId(User authenticatedUser, String description, OrderStatus status) {
         User user = userRepository.findById(authenticatedUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não localizado ou token expirado"));
-        return user.getOrders();
+
+        Specification<Order> searchRule = OrderSpecifications.filterByStatusOrDescription(status,description);
+        List<Order> orders = orderRepository.findAll(searchRule);
+        return orders;
     }
 
     public Order cancelOrder(UUID orderId, User authenticatedUser) {

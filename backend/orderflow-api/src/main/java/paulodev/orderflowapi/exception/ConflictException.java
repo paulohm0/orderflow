@@ -1,4 +1,4 @@
-package paulodev.orderflowapi.esception;
+package paulodev.orderflowapi.exception;
 
 public class ConflictException extends RuntimeException{
 

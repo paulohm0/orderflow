@@ -1,10 +1,8 @@
 package paulodev.orderflowapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,7 @@ import paulodev.orderflowapi.dto.request.RegisterRequest;
 import paulodev.orderflowapi.dto.response.UserTokenResponse;
 import paulodev.orderflowapi.entity.User;
 import paulodev.orderflowapi.entity.UserStatus;
-import paulodev.orderflowapi.esception.*;
+import paulodev.orderflowapi.exception.*;
 import paulodev.orderflowapi.repository.UserRepository;
 
 import java.util.List;

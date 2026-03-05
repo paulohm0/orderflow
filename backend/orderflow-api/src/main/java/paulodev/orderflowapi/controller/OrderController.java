@@ -47,9 +47,11 @@ public class OrderController {
 
     @GetMapping("/list")
     public ResponseEntity<List<OrderResponse>> getOrdersListByUserId(
-            @AuthenticationPrincipal User authenticatedUser)
+            @AuthenticationPrincipal User authenticatedUser,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) OrderStatus status)
     {
-        List<OrderResponse> orderResponseList = orderService.getOrdersListByUserId(authenticatedUser)
+        List<OrderResponse> orderResponseList = orderService.getOrdersListByUserId(authenticatedUser, description, status)
                 .stream().map(order ->
                     new OrderResponse(
                       order.getId(),
