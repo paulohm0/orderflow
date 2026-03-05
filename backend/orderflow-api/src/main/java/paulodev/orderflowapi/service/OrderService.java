@@ -44,7 +44,7 @@ public class OrderService {
         User user = userRepository.findById(authenticatedUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não localizado ou token expirado"));
 
-        Specification<Order> searchRule = OrderSpecifications.filterByStatusOrDescription(status,description);
+        Specification<Order> searchRule = OrderSpecifications.filterByStatusOrDescription(authenticatedUser.getId(), status, description);
         List<Order> orders = orderRepository.findAll(searchRule);
         return orders;
     }

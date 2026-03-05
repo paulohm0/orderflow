@@ -6,14 +6,21 @@ import paulodev.orderflowapi.entity.OrderStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import jakarta.persistence.criteria.Predicate;
+import paulodev.orderflowapi.entity.User;
+import paulodev.orderflowapi.exception.ResourceNotFoundException;
+import paulodev.orderflowapi.repository.UserRepository;
 
 public class OrderSpecifications {
 
-    public static Specification<Order> filterByStatusOrDescription(OrderStatus status, String description) {
+    public static Specification<Order> filterByStatusOrDescription(UUID authenticatedUserId, OrderStatus status, String description) {
         return (root, query, criteriaBuilder) -> {
 
             List<Predicate> conditions = new ArrayList<>();
+
+            conditions.add(criteriaBuilder.equal(root.get("user").get("id"), authenticatedUserId));
 
             // busca pelo campo de status
             if (status != null) {
