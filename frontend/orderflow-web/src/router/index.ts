@@ -2,11 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import UsersView from '../views/UsersView.vue'
+import OrdersView from '../views/OrdersView.vue'
 
 const routes = [
   { path: '/', name: 'Login', component: LoginView },
   { path: '/register', name: 'Register', component: RegisterView },
-  { path: '/users', name: 'Users', component: UsersView }
+  { path: '/users', name: 'Users', component: UsersView },
+  { path: '/orders', name: 'Orders', component: OrdersView }
 ]
 
 const router = createRouter({
@@ -15,4 +17,3 @@ const router = createRouter({
 })
 
 export default router
-

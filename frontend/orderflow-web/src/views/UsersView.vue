@@ -27,6 +27,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import authService from '../services/authService'
 
 interface User {
   id?: string
@@ -48,20 +49,37 @@ async function loadUsers() {
   error.value = null
 
   try {
-    const res = await fetch('http://localhost:8080/auth/users-list')
-    if (!res.ok) throw new Error('Erro na requisição')
+    // adiciona header Authorization: <token>
+    const res = await fetch('http://localhost:8080/auth/users-list', {
+      headers: {
+        'Content-Type': 'application/json',
+        ...authService.getAuthHeader()
+      }
+    })
     const data = await res.json()
     // espera-se um array de usuários com campos id, username, email
     users.value = Array.isArray(data) ? data : []
   } catch (e) {
     console.error('Falha ao carregar usuários', e)
     error.value = 'Falha ao carregar usuários'
+    // se retornar 401/403, redirecionar para login
+    try {
+      const { status } = e as any
+      if (status === 401 || status === 403) {
+        authService.logout()
+        router.push('/')
+      }
+    } catch {}
   } finally {
     isLoading.value = false
   }
 }
 
 onMounted(() => {
+  if (!authService.isAuthenticated()) {
+    router.push('/')
+    return
+  }
   loadUsers()
 })
 </script>

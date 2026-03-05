@@ -10,18 +10,11 @@ interface LoginCredentials {
 
 interface AuthResponse {
   accessToken: string
-  name?: string
-}
-
-interface AuthError {
-  message: string
-  code?: string
+  name: string
 }
 
 class AuthService {
-  // o backend do projeto expõe endpoints em http://localhost:8080/auth
   private apiBaseUrl = 'http://localhost:8080'
-  // usar a mesma chave que outras partes do frontend (LoginView gravava 'accessToken')
   private tokenKey = 'accessToken'
   private userKey = 'auth_user'
 
@@ -31,6 +24,7 @@ class AuthService {
    * @returns Token de autenticação e dados do usuário (accessToken + name)
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
+
     try {
       const response = await fetch(`${this.apiBaseUrl}/auth/login`, {
         method: 'POST',
@@ -60,8 +54,11 @@ class AuthService {
       }
 
       this.setToken(data.accessToken)
+
       // salvar o nome do usuário se existir
-      if (data.name) this.setUser({ name: data.name })
+      this.setUser({
+        name: data.name
+      })
 
       return data
     } catch (error) {
@@ -133,6 +130,7 @@ class AuthService {
    */
   getAuthHeader(): Record<string, string> {
     const token = this.getToken()
+    // Envia no formato `Authorization: Bearer <token>` conforme solicitado
     return token ? { Authorization: `Bearer ${token}` } : {}
   }
 

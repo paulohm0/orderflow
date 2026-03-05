@@ -21,6 +21,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import authService from "@/services/authService";
 
 // Interface para a resposta esperada
 interface LoginResponse {
@@ -46,38 +47,12 @@ async function handleLogin() {
   isLoading.value = true
 
   try {
-    const res = await fetch('http://localhost:8080/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ username: username.value, password: password.value })
+    await authService.login({
+      username: username.value,
+      password: password.value
     })
 
-    // Sucesso se for 200 OK ou 201 Created
-    if (res.status === 200 || res.status === 201) {
-      const data = (await res.json()) as LoginResponse
-
-      if (!data || !data.accessToken) {
-        throw new Error('Resposta inválida do servidor')
-      }
-
-      try {
-        localStorage.setItem('accessToken', data.accessToken)
-      } catch (e) {
-        // Problema ao acessar localStorage
-        console.error('Não foi possível salvar o token no localStorage', e)
-        alert('Erro ao salvar informações de autenticação.')
-        return
-      }
-
-      // Redireciona para /users
-      router.push('/users')
-      return
-    }
-
-    // Qualquer outro status é tratado como erro
-    throw new Error('Falha na autenticação')
+    router.push('/orders')
   } catch (err) {
     console.error('Erro durante o login:', err)
     alert('Erro ao autenticar. Tente novamente.')
