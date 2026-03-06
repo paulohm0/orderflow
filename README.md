@@ -7,6 +7,15 @@ enquanto o Front-end consome esses serviços e reage a eventos do servidor.
 
 ---
 
+## Organização do Projeto
+
+Cada pasta principal (Back-end e Front-end) vai possuir um README próprio, onde são explicadas de forma mais detalhada:
+- A estrutura interna do projeto
+- As responsabilidades de cada camada ou módulo
+- O funcionamento e o papel de cada parte do sistema
+
+---
+
 ## Back-end (API RESTful)
 
 Responsável pelo processamento, persistência de dados, segurança e mensageria assíncrona. (WIP)
@@ -37,10 +46,3 @@ de Prompt para entender a interação e como as IAs geram, estruturam e integram
 - Tailwind CSS  
 
 ---
-
-## Organização do Projeto
-
-Cada pasta principal (Back-end e Front-end) vai possuir um README próprio, onde são explicadas de forma mais detalhada:
-- A estrutura interna do projeto
-- As responsabilidades de cada camada ou módulo
-- O funcionamento e o papel de cada parte do sistema
