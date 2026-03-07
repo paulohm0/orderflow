@@ -1,38 +1,20 @@
-# orderflow-web
+# OrderFlow-Web
 
-This template should help get you started developing with Vue 3 in Vite.
+Aplicação front-end desenvolvida como cliente para consumir e validar a API RESTful do sistema OrderFlow.
 
-## Recommended IDE Setup
+## Objetivo
+O foco deste projeto é servir como um ambiente de teste prático para o back-end. Ele foi construído para simular o comportamento de um navegador consumindo a API, lidando com o armazenamento de tokens JWT, requisições HTTP autenticadas e tratamento de respostas de erro, substituindo testes isolados feitos no Postman.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+A interface e a integração inicial foram geradas de forma assistida por Inteligência Artificial (Copilot) para agilizar a validação dos endpoints.
 
-## Recommended Browser Setup
+## Tecnologias Utilizadas
+* **Vue.js 3:** Framework para estruturação das telas.
+* **TypeScript:** Utilizado para tipar os dados recebidos do back-end (DTOs).
+* **Tailwind CSS:** Estilização utilitária e rápida.
+* **Vite:** Ferramenta de build e servidor local.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+<p float="left">
+<img src="https://imgur.com/AopFilW.png" width="300"/>
+<img src="https://imgur.com/RoSt608.png" width="300"/>
+<img src="https://imgur.com/wkg62rM.png" width="300"/>
+</p>
